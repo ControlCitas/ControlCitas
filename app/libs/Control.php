@@ -29,7 +29,23 @@ class Control {
         //Creamos la instancia
 
         $this->controlador=new $this->controlador;
+
+        //Metodo
+        if (isset($url[1])) {
+            if (method_exists($this->controlador, $url[1])) {
+                $this->metodo=$url[1];
+                unset($url[1]);
+            }
+        }
+
+            //  Parametros
+   $this->parametros=$url;
+   print("<br> Metodo :".$this->metodo."<br>");
+   var_dump($this->parametros);
+
 	}
+
+
 
 	public function separarURL()
 	{
