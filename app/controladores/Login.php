@@ -19,6 +19,16 @@ class Login extends Controlador
 		];
 		$this->vista("loginVista",$datos);
 	}
+
+	public function olvido()
+	{
+		$datos = [
+			"titulo" => "Olvido de contraseña",
+			"subtitulo" => "¿Olvidaste tu contraseña?",
+			"datos" => []
+		];
+		$this->vista("loginOlvidoVista",$datos);
+	}
 }
 
 

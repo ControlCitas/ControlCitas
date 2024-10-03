@@ -16,5 +16,6 @@
 			<label for="recordar">Recordar</label>
 		</div>
 	</form>
+	<a href="/ControlCitas/login/olvido/">¿Oldivaste la clave de acceso?</a>
 </div>
 <?php include_once("piepagina.php"); ?>
