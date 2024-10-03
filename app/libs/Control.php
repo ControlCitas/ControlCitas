@@ -19,7 +19,7 @@ class Control {
 
             $this->controlador=ucwords($url[0]);
             unset($url[0]);
-            var_dump($url);
+            //var_dump($url);
 
         }
         //Cargamos a la clase controladora
@@ -38,11 +38,10 @@ class Control {
             }
         }
 
-            //  Parametros
-   $this->parametros=$url;
-   print("<br> Metodo :".$this->metodo."<br>");
-   var_dump($this->parametros);
-
+   //Parametros
+   $this->parametros= $url?array_values($url):[];
+   call_user_func_array([$this->controlador,$this->metodo],$this->parametros);
+ 
 	}
 
 

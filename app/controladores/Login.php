@@ -6,9 +6,25 @@
 
 class Login extends Controlador{
 
+    private $modelo;
+
+
+
     function __construct(){
-        print( "Hola desde el controlador Login");
+
+        $this->modelo=$this->modelo("LoginModelo");
     }
+
+
+    public function  caratula(){
+
+
+        $datos=[];
+        $this->vista("loginVista",$datos);
+
+    }
+
+
 
 }
 
