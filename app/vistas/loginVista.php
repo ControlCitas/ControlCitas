@@ -1,7 +1,7 @@
 <?php include_once("encabezado.php"); ?>
 <h1 class="text-center"><?php print $datos["subtitulo"]; ?></h1>
 <div class="card p-4 bg-light">
-	<form action="">
+	<form action="<?php print RUTA; ?>login/verifica/">
 		<div class="form-group text-left">
 			<label for="usuario">* Usuario:</label>
 			<input type="text" name="usuario" class="form-control" placeholder="Escribe tu usuario (tu correo electrónico)">
@@ -16,6 +16,6 @@
 			<label for="recordar">Recordar</label>
 		</div>
 	</form>
-	<a href="/ControlCitas/login/olvido/">¿Oldivaste la clave de acceso?</a>
+	<a href="<?php print RUTA; ?>login/olvido/">¿Oldivaste la clave de acceso?</a>
 </div>
 <?php include_once("piepagina.php"); ?>
