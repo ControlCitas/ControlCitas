@@ -10,27 +10,30 @@
 </head>
 <body>
 	<nav class="navbar navbat-espand-sm bg-dark navbar-dark">
-		<a href="" class navbar-brand>Consultorio</a>
+		<a href="" class="navbar-brand">Consultorio</a>
 	</nav>
 	<div class="container-fluid">
 		<div class="row content">
 			<div class="col-sm-2"></div>
 			<div class="col-sm-8">
-				<table>
-			<tr>
-				<td>Usuario:</td>
-				<td><input type="text" name="usuario"></td>
-			</tr>
-			<tr>
-				<td>Clave de acceso:</td>
-				<td><input type="password" name="clave"></td>
-			</tr>
-			<tr>
-				<td>&nbsp;</td>
-				<td><input type="submit" value="Enviar"></td>
-			</tr>
-	</table>
-
+				<h1 class="text-center">Login</h1>
+				<div class="card p-4 bg-light">
+					<form action="">
+						<div class="form-group text-left">
+							<label for="usuario">* Usuario:</label>
+							<input type="text" name="usuario" class="form-control" placeholder="Escribe tu usuario (tu correo electrónico)">
+						</div>
+						<div class="form-group text-left">
+							<label for="clave">* Clave de acceso:</label>
+							<input type="password" name="clave" class="form-control" placeholder="Escribe tu clave de acceso">
+						</div>
+						<div class="form-group text-left">
+							<input type="submit" value="Enviar" class="btn btn-success">
+							<input type="checkbox" name="recordar">
+							<label for="recordar">Recordar</label>
+						</div>
+					</form>
+				</div>
 			</div>
 			<div class="col-sm-2"></div>
 		</div>
