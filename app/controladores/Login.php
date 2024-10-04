@@ -81,16 +81,70 @@ class Login extends Controlador
 	{
 		$errores = [];
 		if ($_SERVER['REQUEST_METHOD']=="POST") {
+			$id = isset($_POST["id"])?$_POST["id"]:"";
+			$clave1 = isset($_POST["clave"])?$_POST["clave"]:"";
+			$clave2 = isset($_POST["verifica"])?$_POST["verifica"]:"";
+			//validaciones
+			if ($clave1=="") {
+				array_push($errores, "La clave de acceso es requerida");
+			}
+			if ($clave2=="") {
+				array_push($errores, "La clave de acceso de verificación es requerida");
+			}
+			if ($clave1!=$clave2) {
+				array_push($errores, "Las claves de acceso no coinciden");
+			}
+			if (count($errores)) {
+				//si hay errores
+				$datos = [
+				"titulo" => "Cambia clave de acceso",
+				"subtitulo" => "Cambia clave de acceso",
+				"menu" => false,
+				"errores" => $errores,
+				"data" => $id
+				];
+				$this->vista("loginCambiaVista",$datos);
+			} else {
+				//No hay errores
+				if ($this->modelo->cambiarClaveAcceso($id, $clave1)) {
+					$datos = [
+					"titulo" => "Modificar clave de acceso",
+					"menu" => false,
+					"errores" => [],
+					"data" => $id,
+					"subtitulo" => "Modificar clave de acceso",
+					"texto" => "La modificación de la clave de acceso fue exitosa. Bienvenido nuevamente.",
+					"color" => "alert-success",
+					"url" => "login",
+					"colorBoton" => "btn-success",
+					"textoBoton" => "Regresar"
+					];
+					$this->vista("mensajeVista",$datos);
+				} else {
+					$datos = [
+					"titulo" => "Error al modificar la clave de acceso",
+					"menu" => false,
+					"errores" => [],
+					"data" => [],
+					"subtitulo" => "Error al modificar la clave de acceso",
+					"texto" => "Existió un error al modificar la clave de acceso.",
+					"color" => "alert-danger",
+					"url" => "login",
+					"colorBoton" => "btn-danger",
+					"textoBoton" => "Regresar"
+					];
+					$this->vista("mensajeVista",$datos);
+				}
+			}
 		} else {
 			$datos = [
 			"titulo" => "Cambio de contraseña",
 			"subtitulo" => "Cambio de contraseña",
 			"errores" => $errores,
-			"datos" => $id
+			"data" => $id
 			];
 			$this->vista("loginCambiaVista",$datos);
 		}
 	}
 }
-
 
