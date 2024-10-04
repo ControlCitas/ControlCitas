@@ -41,16 +41,14 @@ class Login extends Controlador
 				} else {
 					array_push($errores,"El correo electrónico no se encuentra en nuestra base de datos.");
 				}
-				
-			} else {
-				$datos = [
-				"titulo" => "Olvido de contraseña",
-				"subtitulo" => "¿Olvidaste tu contraseña?",
-				"errores" => $errores,
-				"datos" => []
-				];
-				$this->vista("loginOlvidoVista",$datos);
 			}
+			$datos = [
+			"titulo" => "Olvido de contraseña",
+			"subtitulo" => "¿Olvidaste tu contraseña?",
+			"errores" => $errores,
+			"datos" => []
+			];
+			$this->vista("loginOlvidoVista",$datos);
 		} else {
 			$datos = [
 			"titulo" => "Olvido de contraseña",
@@ -62,3 +60,5 @@ class Login extends Controlador
 		}
 	}
 }
+
+
