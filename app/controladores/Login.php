@@ -77,5 +77,20 @@ class Login extends Controlador
 			$this->vista("loginOlvidoVista",$datos);
 		}
 	}
+	public function cambiarclave($id='')
+	{
+		$errores = [];
+		if ($_SERVER['REQUEST_METHOD']=="POST") {
+		} else {
+			$datos = [
+			"titulo" => "Cambio de contraseña",
+			"subtitulo" => "Cambio de contraseña",
+			"errores" => $errores,
+			"datos" => $id
+			];
+			$this->vista("loginCambiaVista",$datos);
+		}
+	}
 }
+
 

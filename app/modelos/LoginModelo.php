@@ -25,12 +25,12 @@ class LoginModelo
 			return false;
 		} else {
 			$data = $this->getUsuarioCorreo($email);
-			if (!empty($data)) {
+			if (empty($data)) {
 				$id = $data["id"];
 				$nombre = $data["nombre"];
 				//
 				$msg = $nombre. ", entra a la siguiente liga para cambiar tu clave de acceso al consultorio...<br>";
-				$msg.= "<a href='".RUTA."login/cambiarClave/".$id."'>Cambiar tu clave de acceso</a>";
+				$msg.= "<a href='".RUTA."login/cambiarclave/".$id."'>Cambiar tu clave de acceso</a>";
 
 				$headers = "MIME-Version: 1.0\r\n"; 
 				$headers.= "Content-type:text/html; charset=UTF-8\r\n"; 
