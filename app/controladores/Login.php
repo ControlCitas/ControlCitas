@@ -36,19 +36,37 @@ class Login extends Controlador
 			//Proceso
 			if (empty($errores)) {
 				if ($this->modelo->validarCorreo($email)) {
-					var_dump("Si se encontró el correo");
-					exit(0);
+					if (!$this->modelo->enviarCorreo($email)) {
+						$datos = [
+						"titulo" => "Cambio de clave de acceso",
+						"menu" => false,
+						"errores" => [],
+						"data" => [],
+						"subtitulo" => "Cambio de clave de acceso",
+						"texto" => "Se ha enviado un correo a <b>".$email."</b> para que puedas cambiar tu clave de acceso. Cualquier duda te puedes comunicar con nosotros. No olvides revisar tu bandeja de spam.",
+						"color" => "alert-success",
+						"url" => "login",
+						"colorBoton" => "btn-success",
+						"textoBoton" => "Regresar"
+						];
+						$this->vista("mensajeVista",$datos);
+					} else {
+						array_push($errores,"El correo electrónico no fue enviado correctamente.");
+					}
 				} else {
 					array_push($errores,"El correo electrónico no se encuentra en nuestra base de datos.");
 				}
 			}
-			$datos = [
-			"titulo" => "Olvido de contraseña",
-			"subtitulo" => "¿Olvidaste tu contraseña?",
-			"errores" => $errores,
-			"datos" => []
-			];
-			$this->vista("loginOlvidoVista",$datos);
+			if (!empty($errores)) {
+				$datos = [
+				"titulo" => "Olvido de contraseña",
+				"subtitulo" => "¿Olvidaste tu contraseña?",
+				"errores" => $errores,
+				"datos" => []
+				];
+				$this->vista("loginOlvidoVista",$datos);
+			}
+			
 		} else {
 			$datos = [
 			"titulo" => "Olvido de contraseña",
@@ -60,5 +78,4 @@ class Login extends Controlador
 		}
 	}
 }
-
 
