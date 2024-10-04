@@ -51,4 +51,18 @@ class LoginModelo
 		$data = $this->db->query($sql);
 		return $data;
 	}
+
+
+
+
+	public function cambiarClaveAcceso($id, $clave){
+	    $r = false;
+	    $clave = hash_hmac("sha512", $clave, CLAVE);
+	    $sql = "UPDATE admon SET ";
+	    $sql.= "clave='".$clave."' ";
+	    $sql.= "WHERE id=".$id;
+	    $r = $this->db->queryNoSelect($sql);
+	    return $r;
+	}
+
 }

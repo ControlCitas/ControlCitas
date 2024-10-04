@@ -47,6 +47,14 @@ class MySQLdb
 		}
 		return $data;
 	}
+
+
+//Query regresa un valor booleano
+public function queryNoSelect($sql){
+	return mysqli_query($this->conn, $sql);
+}
+
+
 }
 
 ?>
