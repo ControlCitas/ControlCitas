@@ -13,70 +13,26 @@ class Login extends Controlador
 
 	public function caratula()
 	{
+		if(isset($_COOKIE["datos"])){
+	      $datos_array = explode("|",$_COOKIE["datos"]);
+	      $usuario = $datos_array[0];
+	      $clave = $datos_array[1];
+	      $data = [
+	        "usuario" => $usuario,
+	        "clave" => $clave,
+	        "recordar" => "on"
+	      ];
+	    } else {
+	      $data = [];
+	    }
 		$datos = [
 			"titulo" => "Entrada",
-			"subtitulo" => "Entrada al sistema"
+			"subtitulo" => "Entrada al sistema",
+			"data" => $data
 		];
 		$this->vista("loginVista",$datos);
 	}
 
-	public function olvido()
-	{
-		$errores = [];
-		if ($_SERVER['REQUEST_METHOD']=="POST") {
-			//Recepción de los datos
-			$email = $_POST["correo"]??"";
-			//Validación
-			if ($email=="") {
-				array_push($errores,"El correo electrónico es requerido");
-			}
-			if (!filter_var($email,FILTER_VALIDATE_EMAIL)) {
-				array_push($errores,"El correo electrónico no es válido");
-			}
-			//Proceso
-			if (empty($errores)) {
-				if ($this->modelo->validarCorreo($email)) {
-					if (!$this->modelo->enviarCorreo($email)) {
-						$datos = [
-						"titulo" => "Cambio de clave de acceso",
-						"menu" => false,
-						"errores" => [],
-						"data" => [],
-						"subtitulo" => "Cambio de clave de acceso",
-						"texto" => "Se ha enviado un correo a <b>".$email."</b> para que puedas cambiar tu clave de acceso. Cualquier duda te puedes comunicar con nosotros. No olvides revisar tu bandeja de spam.",
-						"color" => "alert-success",
-						"url" => "login",
-						"colorBoton" => "btn-success",
-						"textoBoton" => "Regresar"
-						];
-						$this->vista("mensajeVista",$datos);
-					} else {
-						array_push($errores,"El correo electrónico no fue enviado correctamente.");
-					}
-				} else {
-					array_push($errores,"El correo electrónico no se encuentra en nuestra base de datos.");
-				}
-			}
-			if (!empty($errores)) {
-				$datos = [
-				"titulo" => "Olvido de contraseña",
-				"subtitulo" => "¿Olvidaste tu contraseña?",
-				"errores" => $errores,
-				"datos" => []
-				];
-				$this->vista("loginOlvidoVista",$datos);
-			}
-			
-		} else {
-			$datos = [
-			"titulo" => "Olvido de contraseña",
-			"subtitulo" => "¿Olvidaste tu contraseña?",
-			"errores" => $errores,
-			"datos" => []
-			];
-			$this->vista("loginOlvidoVista",$datos);
-		}
-	}
 	public function cambiarclave($id='')
 	{
 		$errores = [];
@@ -146,5 +102,96 @@ class Login extends Controlador
 			$this->vista("loginCambiaVista",$datos);
 		}
 	}
-}
 
+	public function olvido()
+	{
+		$errores = [];
+		if ($_SERVER['REQUEST_METHOD']=="POST") {
+			//Recepción de los datos
+			$email = $_POST["correo"]??"";
+			//Validación
+			if ($email=="") {
+				array_push($errores,"El correo electrónico es requerido");
+			}
+			if (!filter_var($email,FILTER_VALIDATE_EMAIL)) {
+				array_push($errores,"El correo electrónico no es válido");
+			}
+			//Proceso
+			if (empty($errores)) {
+				if ($this->modelo->validarCorreo($email)) {
+					if (!$this->modelo->enviarCorreo($email)) {
+						$datos = [
+						"titulo" => "Cambio de clave de acceso",
+						"menu" => false,
+						"errores" => [],
+						"data" => [],
+						"subtitulo" => "Cambio de clave de acceso",
+						"texto" => "Se ha enviado un correo a <b>".$email."</b> para que puedas cambiar tu clave de acceso. Cualquier duda te puedes comunicar con nosotros. No olvides revisar tu bandeja de spam.",
+						"color" => "alert-success",
+						"url" => "login",
+						"colorBoton" => "btn-success",
+						"textoBoton" => "Regresar"
+						];
+						$this->vista("mensajeVista",$datos);
+					} else {
+						array_push($errores,"El correo electrónico no fue enviado correctamente.");
+					}
+				} else {
+					array_push($errores,"El correo electrónico no se encuentra en nuestra base de datos.");
+				}
+			}
+			if (!empty($errores)) {
+				$datos = [
+				"titulo" => "Olvido de contraseña",
+				"subtitulo" => "¿Olvidaste tu contraseña?",
+				"errores" => $errores,
+				"datos" => []
+				];
+				$this->vista("loginOlvidoVista",$datos);
+			}
+		} else {
+			$datos = [
+			"titulo" => "Olvido de contraseña",
+			"subtitulo" => "¿Olvidaste tu contraseña?",
+			"errores" => $errores,
+			"datos" => []
+			];
+			$this->vista("loginOlvidoVista",$datos);
+		}
+	}
+
+	public function verificar()
+	{
+		$errores = [];
+		if ($_SERVER['REQUEST_METHOD']=="POST") {
+			$usuario = $_POST["usuario"]??"";
+			$clave = $_POST["clave"] ?? "";
+			$recordar = isset($_POST["recordar"])?"on":"off";
+			$errores = $this->modelo->verificar($usuario, $clave);
+
+			//recuerdame
+			$valor = $usuario."|".$clave;
+			if($recordar=="on"){
+				$fecha = time()+(60*60*24*7);
+			} else {
+				$fecha = time() - 1;
+			}
+			setcookie("datos",$valor,$fecha,RUTA);
+
+			//Validacion
+			if (empty($errores)) {
+				//
+				header("location:".RUTA."tablero");
+			} else {
+				//Datos erróneos
+				$datos = [
+				  "titulo" => "Login",
+				  "subtitulo" => "Entrada al sistema",
+				  "menu" => false,
+				  "errores" => $errores
+				];
+				$this->vista("loginVista",$datos);
+			}
+	    }
+	}
+}

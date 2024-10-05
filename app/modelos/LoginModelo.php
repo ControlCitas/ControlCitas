@@ -11,11 +11,14 @@ class LoginModelo
 		$this->db = new MySQLdb();
 	}
 
-	public function validarCorreo($email)
-	{
-		$sql ="SELECT * FROM admon WHERE correo='".$email."'";
-		$data = $this->db->query($sql);
-		return (count($data)==0)?false:true;
+	public function cambiarClaveAcceso($id, $clave){
+	    $r = false;
+	    $clave = hash_hmac("sha512", $clave, CLAVE);
+	    $sql = "UPDATE admon SET ";
+	    $sql.= "clave='".$clave."' ";
+	    $sql.= "WHERE id=".$id;
+	    $r = $this->db->queryNoSelect($sql);
+	    return $r;
 	}
 
 	public function enviarCorreo($email='')
@@ -52,17 +55,26 @@ class LoginModelo
 		return $data;
 	}
 
-
-
-
-	public function cambiarClaveAcceso($id, $clave){
-	    $r = false;
-	    $clave = hash_hmac("sha512", $clave, CLAVE);
-	    $sql = "UPDATE admon SET ";
-	    $sql.= "clave='".$clave."' ";
-	    $sql.= "WHERE id=".$id;
-	    $r = $this->db->queryNoSelect($sql);
-	    return $r;
+	public function validarCorreo($email)
+	{
+		$sql ="SELECT * FROM admon WHERE correo='".$email."'";
+		$data = $this->db->query($sql);
+		return (count($data)==0)?false:true;
 	}
 
+	public function verificar($usuario, $clave){
+	    $errores = array();
+	    $sql = "SELECT * FROM admon WHERE correo='".$usuario."'";
+	    $clave = hash_hmac("sha512", $clave, CLAVE);
+	    $clave = substr($clave,0,200);
+	    //consulta
+	    $data = $this->db->query($sql);
+	    //validacion
+	    if (empty($data)) {
+	      array_push($errores,"No existe ese usuario, favor de verificarlo.");
+	    } else if($clave!=$data["clave"]){
+	      array_push($errores,"Clave de acceso erronea, favor de verificar.");
+	    }
+	    return $errores;
+	}
 }
