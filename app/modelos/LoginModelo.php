@@ -34,6 +34,7 @@ class LoginModelo
 				//
 				$msg = $nombre. ", entra a la siguiente liga para cambiar tu clave de acceso al consultorio...<br>";
 				$msg.= "<a href='".RUTA."login/cambiarclave/".$id."'>Cambiar tu clave de acceso</a>";
+			
 
 				$headers = "MIME-Version: 1.0\r\n"; 
 				$headers.= "Content-type:text/html; charset=UTF-8\r\n"; 

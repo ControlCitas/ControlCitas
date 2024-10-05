@@ -39,6 +39,7 @@ class Login extends Controlador
 		$errores = [];
 		if ($_SERVER['REQUEST_METHOD']=="POST") {
 			$id = isset($_POST["id"])?$_POST["id"]:"";
+			$id=Helper::desencriptar($id);
 			$clave1 = isset($_POST["clave"])?$_POST["clave"]:"";
 			$clave2 = isset($_POST["verifica"])?$_POST["verifica"]:"";
 			//validaciones
@@ -94,6 +95,7 @@ class Login extends Controlador
 				}
 			}
 		} else {
+			$id=Helper::desencriptar($id);
 			$id = Helper::desencriptar($id);
 			$datos = [
 			"titulo" => "Cambio de contraseña",
