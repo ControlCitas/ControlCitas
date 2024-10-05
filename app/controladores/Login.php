@@ -14,7 +14,8 @@ class Login extends Controlador
 	public function caratula()
 	{
 		if(isset($_COOKIE["datos"])){
-	      $datos_array = explode("|",$_COOKIE["datos"]);
+		  $datos = Helper::desencriptar($_COOKIE["datos"]);
+	      $datos_array = explode("|",$datos);
 	      $usuario = $datos_array[0];
 	      $clave = $datos_array[1];
 	      $data = [
@@ -93,6 +94,7 @@ class Login extends Controlador
 				}
 			}
 		} else {
+			$id = Helper::desencriptar($id);
 			$datos = [
 			"titulo" => "Cambio de contraseña",
 			"subtitulo" => "Cambio de contraseña",
@@ -119,7 +121,7 @@ class Login extends Controlador
 			//Proceso
 			if (empty($errores)) {
 				if ($this->modelo->validarCorreo($email)) {
-					if (!$this->modelo->enviarCorreo($email)) {
+					if ($this->modelo->enviarCorreo($email)) {
 						$datos = [
 						"titulo" => "Cambio de clave de acceso",
 						"menu" => false,
@@ -171,6 +173,7 @@ class Login extends Controlador
 
 			//recuerdame
 			$valor = $usuario."|".$clave;
+			$valor = Helper::encriptar($valor);
 			if($recordar=="on"){
 				$fecha = time()+(60*60*24*7);
 			} else {
@@ -180,6 +183,10 @@ class Login extends Controlador
 
 			//Validacion
 			if (empty($errores)) {
+				//Iniciamos sesión
+				$data = $this->modelo->getUsuarioCorreo($usuario);
+				$sesion = new Sesion();
+				$sesion->iniciarLogin($data);
 				//
 				header("location:".RUTA."tablero");
 			} else {
@@ -195,3 +202,4 @@ class Login extends Controlador
 	    }
 	}
 }
+

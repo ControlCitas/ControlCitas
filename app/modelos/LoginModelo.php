@@ -28,8 +28,8 @@ class LoginModelo
 			return false;
 		} else {
 			$data = $this->getUsuarioCorreo($email);
-			if (empty($data)) {
-				$id = $data["id"];
+			if (!empty($data)) {
+				$id = Helper::encriptar($data["id"]);
 				$nombre = $data["nombre"];
 				//
 				$msg = $nombre. ", entra a la siguiente liga para cambiar tu clave de acceso al consultorio...<br>";
