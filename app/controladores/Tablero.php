@@ -34,11 +34,61 @@ class Tablero extends Controlador{
     header("location:".RUTA);
   }
 
-    public function perfil(){
+  public function perfil(){
     $errores = [];
     if ($_SERVER['REQUEST_METHOD']=="POST") {
-      
-    } 
+      //
+      $id = $_POST['id'] ?? "";
+      $nombre = $_POST['nombre'] ?? "";
+      $correo = $_POST['correo'] ?? "";
+      $clave = $_POST['clave'] ?? "";
+      $clave1 = $_POST['nuevaClave'] ?? "";
+      $clave2 = $_POST['confirmacion'] ?? "";
+
+      if($id==""){
+        array_push($errores,"Error en el identificador del usuario");
+      }
+
+      if($nombre==""){
+        array_push($errores,"El nombre es un valor requerido");
+      }
+
+      if($correo==""){
+        array_push($errores,"El correo electrónico es requerido");
+      }
+
+      if($clave=="xxxxxxxxxxxx"){
+        $clave1 = $clave2 = "";
+      } else {
+        if($this->modelo->verificar($id,$clave)){
+          if ($clave1=="") {
+            array_push($errores, "La nueva clave de acceso es requerida");
+          }
+          if ($clave2=="") {
+            array_push($errores, "La clave de acceso de verificación es requerida");
+          }
+          if ($clave1!=$clave2) {
+            array_push($errores, "Las nuevas claves de acceso no coinciden");
+          }
+        } else {       
+          array_push($errores, "Algún dato es erróneo, favor de verificar.");
+        } 
+      }
+      if (empty($errores)) {
+        //Iniciamos sesión
+        if($this->modelo->setUsuario($id, $nombre, $correo, $clave1)){
+          $sesion = new Sesion();
+          $data = $this->modelo->getUsuarioId($id);
+          $sesion->iniciarLogin($data);
+          //
+          header("location:".RUTA."tablero");
+        } else {
+          print "Error al actualizar los datos";
+          exit(0);
+        }
+      }      
+    }
+
     //Leemos los datos del registro del id
     session_start();
     if (isset($_SESSION["usuario"])) {
