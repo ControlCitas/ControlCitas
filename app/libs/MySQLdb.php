@@ -48,13 +48,22 @@ class MySQLdb
 		return $data;
 	}
 
+	//Query regresa un valor booleano
+	public function queryNoSelect($sql){
+		return mysqli_query($this->conn, $sql);
+	}
 
-//Query regresa un valor booleano
-public function queryNoSelect($sql){
-	return mysqli_query($this->conn, $sql);
-}
-
-
+	//Query regresa un arreglo con los registros
+	public function querySelect($sql){
+	    $data = array();
+	    $r = mysqli_query($this->conn, $sql);
+	    if($r){
+	      while($row = mysqli_fetch_assoc($r)){
+	        array_push($data, $row);
+	      }
+	    }
+	    return $data;
+	}
 }
 
 ?>

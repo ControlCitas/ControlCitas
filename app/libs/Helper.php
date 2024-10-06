@@ -21,5 +21,14 @@ class Helper
     list($cadena,$iv) = array_pad(explode("::",base64_decode($data),2),2,null);
     return openssl_decrypt($cadena, "aes-256-cbc", $llaveEncriptada,0,$iv);
   }
+
+  public static function cadena($cadena){
+    //
+    $buscar  = array('^', 'delete', 'drop','truncate','exec','system');
+    $reemplazar = array('-', 'dele*te', 'dr*op','truneca*te','ex*ec','syst*em');
+    $cadena = str_replace($buscar, $reemplazar, $cadena);
+    $cadena = addslashes(htmlentities($cadena));
+    return $cadena;
+  }
 }
 ?>
