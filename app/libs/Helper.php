@@ -30,5 +30,33 @@ class Helper
     $cadena = addslashes(htmlentities($cadena));
     return $cadena;
   }
+
+  public static function fecha($cadena=""){
+    //ISO AAAA-MM-DD
+    $salida = false;
+    if ($cadena!="") {
+      $fecha_array = explode("-", $cadena);
+      $salida = checkdate($fecha_array[1], $fecha_array[2], $fecha_array[0]);
+    }
+    return $salida;
+  }
+
+  public static function numero($cadena){
+    $buscar  = array(' ', '$', ',');
+    $reemplazar = array('', '', '');
+    $numero = str_replace($buscar, $reemplazar, $cadena);
+    return $numero;
+  }
+
+  public static function calcularEdad($fecha='')
+  {
+    $edad = 0;
+    if(Helper::fecha($fecha)){
+      $nacimiento = new DateTime($fecha);
+      $ahora = new DateTime(date("Y-m-d"));
+      $edad = $ahora->diff($nacimiento);
+    }
+    return $edad->format("%y");
+  }
 }
 ?>

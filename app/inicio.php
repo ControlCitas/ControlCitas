@@ -9,5 +9,6 @@ require_once("libs/Config.php");
 require_once("libs/Mysqldb.php");
 require_once("libs/Controlador.php");
 require_once("libs/Control.php");
+require_once("libs/Llaves.php");
 new Config("development");
 ?>
