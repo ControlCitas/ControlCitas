@@ -58,5 +58,21 @@ class Helper
     }
     return $edad->format("%y");
   }
+
+  public static function horario($hr=""){
+     if($hr==""){
+      return false;
+     }
+     $horas = explode(":",$hr);
+     if (count($horas)!=2) {
+       return false;
+     } else if ($horas[0]<"0" || $horas[0]>"24") {
+       return false;
+     } else if ($horas[1]<"0" || $horas[1]>"60") {
+       return false;
+     } else {
+       return true;
+     }                                                                                
+  }
 }
 ?>
