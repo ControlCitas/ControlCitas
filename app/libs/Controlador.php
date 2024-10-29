@@ -21,4 +21,27 @@ class Controlador{
 		}
 		
 	}
+
+	public function mensajeResultado($titulo, $subtitulo, $mensaje, $url, $color)
+	{
+		if($color=="success"){
+			$alertColor = "alert-success";
+			$colorBoton = "btn-success";
+		} else if($color=="danger"){
+			$alertColor = "alert-danger";
+			$colorBoton = "btn-danger";
+		}
+		$datos = [
+		"titulo" => $titulo,
+		"menu" => false,
+		"errores" => [],
+		"subtitulo" => $subtitulo,
+		"url" => $url,
+		"texto" => $mensaje,
+		"color" => $alertColor,
+		"colorBoton" => $colorBoton,
+		"textoBoton" => "Regresar"
+		];
+		$this->vista("mensajeVista",$datos);
+	}
 }

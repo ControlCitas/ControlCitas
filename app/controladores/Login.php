@@ -39,7 +39,7 @@ class Login extends Controlador
 		$errores = [];
 		if ($_SERVER['REQUEST_METHOD']=="POST") {
 			$id = isset($_POST["id"])?$_POST["id"]:"";
-			$id=Helper::desencriptar($id);
+			$admon = isset($_POST["admon"])?$_POST["admon"]:"";
 			$clave1 = isset($_POST["clave"])?$_POST["clave"]:"";
 			$clave2 = isset($_POST["verifica"])?$_POST["verifica"]:"";
 			//validaciones
@@ -58,13 +58,14 @@ class Login extends Controlador
 				"titulo" => "Cambia clave de acceso",
 				"subtitulo" => "Cambia clave de acceso",
 				"menu" => false,
+				"admon" => ($admon)?"admon":"doctor",
 				"errores" => $errores,
 				"data" => $id
 				];
 				$this->vista("loginCambiaVista",$datos);
 			} else {
 				//No hay errores
-				if ($this->modelo->cambiarClaveAcceso($id, $clave1)) {
+				if ($this->modelo->cambiarClaveAcceso($id, $clave1,$admon)) {
 					$datos = [
 					"titulo" => "Modificar clave de acceso",
 					"menu" => false,
@@ -95,12 +96,12 @@ class Login extends Controlador
 				}
 			}
 		} else {
-			$id=Helper::desencriptar($id);
 			$id = Helper::desencriptar($id);
 			$datos = [
 			"titulo" => "Cambio de contraseña",
 			"subtitulo" => "Cambio de contraseña",
 			"errores" => $errores,
+			"admon" => ($admon)?"admon":"doctor",
 			"data" => $id
 			];
 			$this->vista("loginCambiaVista",$datos);
@@ -149,6 +150,7 @@ class Login extends Controlador
 				"titulo" => "Olvido de contraseña",
 				"subtitulo" => "¿Olvidaste tu contraseña?",
 				"errores" => $errores,
+				"admon" => ($admon)?"admon":"doctor",
 				"datos" => []
 				];
 				$this->vista("loginOlvidoVista",$datos);
@@ -158,6 +160,7 @@ class Login extends Controlador
 			"titulo" => "Olvido de contraseña",
 			"subtitulo" => "¿Olvidaste tu contraseña?",
 			"errores" => $errores,
+			"admon" => ($admon)?"admon":"doctor",
 			"datos" => []
 			];
 			$this->vista("loginOlvidoVista",$datos);
@@ -172,6 +175,14 @@ class Login extends Controlador
 			$clave = $_POST["clave"] ?? "";
 			$recordar = isset($_POST["recordar"])?"on":"off";
 			$errores = $this->modelo->verificar($usuario, $clave);
+			$admon = true;
+			//
+			//Hubo errores, buscamos si es doctor
+			//
+			if(count($errores)>0){
+				$errores = $this->modelo->verificarDoctor($usuario, $clave);
+				$admon = false;
+			}
 
 			//recuerdame
 			$valor = $usuario."|".$clave;
@@ -182,21 +193,36 @@ class Login extends Controlador
 				$fecha = time() - 1;
 			}
 			setcookie("datos",$valor,$fecha,RUTA);
-
+			//
 			//Validacion
+			//
 			if (empty($errores)) {
 				//Iniciamos sesión
-				$data = $this->modelo->getUsuarioCorreo($usuario);
+				$data = $this->modelo->getUsuarioCorreo($usuario,$admon);
 				$sesion = new Sesion();
-				$sesion->iniciarLogin($data);
+				$sesion->iniciarLogin($data,$admon);
 				//
-				header("location:".RUTA."tablero");
+				//si la clave de acceso está vacía
+				//
+				if ($clave=="") {
+					$datos = [
+					"titulo" => "Añadir de contraseña",
+					"subtitulo" => "Añadir la contraseña",
+					"admon" => $admon,
+					"errores" => $errores,
+					"data" => $usuario
+					];
+					$this->vista("loginCambiaVista",$datos);
+				} else {
+					header("location:".RUTA."tablero");
+				}
 			} else {
 				//Datos erróneos
 				$datos = [
 				  "titulo" => "Login",
 				  "subtitulo" => "Entrada al sistema",
 				  "menu" => false,
+				  "admon" => ($admon)?"admon":"doctor",
 				  "errores" => $errores
 				];
 				$this->vista("loginVista",$datos);
@@ -204,4 +230,5 @@ class Login extends Controlador
 	    }
 	}
 }
+
 

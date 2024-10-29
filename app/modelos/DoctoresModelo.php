@@ -5,7 +5,7 @@
 class DoctoresModelo
 {
 	public $db;
-		
+	
 	function __construct()
 	{
 		$this->db = new MySQLdb();
@@ -19,7 +19,7 @@ class DoctoresModelo
 	   $sql.= "'".$data['correo']."', ";          //5. correo
 	   $sql.= "'".$data['direccion']."', ";       //6. direccion
 	   $sql.= "'".$data['telefono']."', ";        //7. telefono
-	   $sql.= "'".$data['depto']."', ";           //8. depto
+	   $sql.= "'', ";           				  //8. clave de acceso
 	   $sql.= "'".$data['perfil']."', ";          //9. perfil
 	   $sql.= "1, ";                              //10. status
 	   $sql.= "0, ";                              //11. baja
@@ -48,6 +48,18 @@ class DoctoresModelo
 	    return $data;
 	}
 
+	public function getNumCitasDoctores($idDoctor){
+		$sql = "SELECT count(*) FROM citas WHERE baja=0 AND idDoctor=".$idDoctor;
+	    $data = $this->db->query($sql);
+	    return $data;
+	}
+
+	public function getNumHorariosDoctores($idDoctor){
+		$sql = "SELECT count(*) FROM horarios WHERE baja=0 AND idDoctor=".$idDoctor;
+	    $data = $this->db->query($sql);
+	    return $data;
+	}
+
 	public function modificaDoctor($data){
 		$salida = false;
 		if (!empty($data["id"])) {
@@ -58,7 +70,7 @@ class DoctoresModelo
 			$sql.= "correo='".$data['correo']."', ";          //5. correo
 			$sql.= "direccion='".$data['direccion']."', ";    //6. descuento 
 			$sql.= "telefono='".$data['telefono']."', ";      //7. envio
-			$sql.= "depto='".$data['depto']."', ";            //8. depto
+			//$sql.= "depto='".$data['depto']."', ";            //8. no actualiza el depto
 			$sql.= "perfil='".$data['perfil']."', ";          //9. fecha
 			$sql.= "baja=0, ";                                //16. baja
 			$sql.= "modificado_dt=(NOW()) ";                  //18. fecha modificado

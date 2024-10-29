@@ -13,7 +13,7 @@ class Pacientes extends Controlador
 	    $sesion = new Sesion();
 	    if ($sesion->getLogin()) {
 		  $this->modelo = $this->modelo("PacientesModelo");
-	     // $this->admon = $sesion->getAdmon();
+	      $this->admon = $sesion->getAdmon();
 	    } else {
 	      header("location:".RUTA);
 	    }
@@ -92,19 +92,13 @@ class Pacientes extends Controlador
 	        array_push($errores,"El teléfono del paciente es requerido.");
 	      }
 	      if(empty($dni)){
-	        array_push($errores,"El DNI del paciente es requerido.");
+	        array_push($errores,"El departamento del paciente es requerido.");
 	      }
 	      if(!Helper::fecha($fechaNacimiento)){
 	        array_push($errores,"La fecha de nacimiento del paciente es requerido.");
 	      }
 	      if($genero=="void"){
 	        array_push($errores,"El perfil del paciente es requerido.");
-	      }
-	      if( trim($id)=="" && $this->modelo->verificaCorreo($correo)==false){
-	        array_push($errores,"Ya existe ese correo. El correo debe ser único.");
-	      }
-	      if(trim($id)=="" && $this->modelo->verificaDNI($dni)==false){
-	        array_push($errores,"Ya existe ese DNI. El DNI debe ser único.");
 	      }
 	      //Crear arreglo de datos
 	      $data = [

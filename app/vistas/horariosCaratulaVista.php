@@ -28,7 +28,7 @@
       print "<td class='text-left'>".$datos["data"][$i]['cadena']."</td>";
       print "<td class='text-left'>".$datos["data"][$i]["inicio"]."</td>";
       print "<td class='text-left'>".$datos["data"][$i]["fin"]."</td>";
-      print "<td class='text-left'>".$datos["data"][$i]["duracion"]."min.</td>";
+      print "<td class='text-left'>".$datos["data"][$i]["duracion"]." min.</td>";
       //
       print "<td><a href='".RUTA."horarios/cambio/".$id."' class='btn btn-info'>Modificar</a></td>";
       //

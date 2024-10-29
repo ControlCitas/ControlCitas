@@ -13,31 +13,33 @@
 		<a href="<?php print RUTA.'tablero/'; ?>" class="navbar-brand">Consultorio</a>
 		<?php
 		if (isset($datos["menu"]) && $datos["menu"]==true) {
-	      print "<ul class='navbar-nav mr-auto mt-2 mt-lg-0'>";
-	      print "<li class='nav-item'>";
-	      print "<a href='".RUTA."doctores' class='nav-link ";
-	      if(isset($datos["activo"]) && $datos["activo"]=="doctores") print "active";
-	      print "'>Doctores</a>";
-	      print "</li>";
-	      //
-	      print "<li class='nav-item'>";
-	      print "<a href='".RUTA."pacientes' class='nav-link ";
-	      if(isset($datos["activo"]) && $datos["activo"]=="pacientes") print "active";
-	      print "'>Pacientes</a>";
-	      print "</li>";
-	      //
-	      print "<li class='nav-item'>";
-	      print "<a href='".RUTA."citas' class='nav-link ";
-	      if(isset($datos["activo"]) && $datos["activo"]=="citas") print "active";
-	      print "'>Citas</a>";
-	      print "</li>";
-	      //
-	      print "<li class='nav-item'>";
-	      print "<a href='".RUTA."horarios' class='nav-link ";
-	      if(isset($datos["activo"]) && $datos["activo"]=="horarios") print "active";
-	      print "'>Horarios</a>";
-	      print "</li>";
-	      print "</ul>";
+			if (isset($datos["admon"]) && $datos["admon"]==true) {
+			  print "<ul class='navbar-nav mr-auto mt-2 mt-lg-0'>";
+		      print "<li class='nav-item'>";
+		      print "<a href='".RUTA."doctores' class='nav-link ";
+		      if(isset($datos["activo"]) && $datos["activo"]=="doctores") print "active";
+		      print "'>Doctores</a>";
+		      print "</li>";
+		      //
+		      print "<li class='nav-item'>";
+		      print "<a href='".RUTA."pacientes' class='nav-link ";
+		      if(isset($datos["activo"]) && $datos["activo"]=="pacientes") print "active";
+		      print "'>Pacientes</a>";
+		      print "</li>";
+		      //
+		      print "<li class='nav-item'>";
+		      print "<a href='".RUTA."citas' class='nav-link ";
+		      if(isset($datos["activo"]) && $datos["activo"]=="citas") print "active";
+		      print "'>Citas</a>";
+		      print "</li>";
+		      //
+		      print "<li class='nav-item'>";
+		      print "<a href='".RUTA."horarios' class='nav-link ";
+		      if(isset($datos["activo"]) && $datos["activo"]=="horarios") print "active";
+		      print "'>Horarios</a>";
+		      print "</li>";
+		      print "</ul>";
+		  }
 	      //
 	      print "<ul class='nav navbar-nav ms-auto'>";
 	      //

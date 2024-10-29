@@ -10,6 +10,7 @@ class Config
 	
 	function __construct($ambiente)
 	{
+		date_default_timezone_set('America/Mexico_City');
 		switch ($ambiente)
 		{
 			case 'development':

@@ -5,7 +5,7 @@
 class HorariosModelo extends Llaves
 {
 	public $db;
-		
+	
 	function __construct()
 	{
 		$this->db = new MySQLdb();

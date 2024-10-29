@@ -104,16 +104,4 @@ class PacientesModelo extends Llaves
 	    }
 	    return $salida;
 	}
-
-	public function verificaCorreo($correo){
-		$sql = "SELECT * FROM pacientes WHERE correo='".$correo."' AND baja=0";
-	    $data = $this->db->query($sql);
-	    return ($data==[])?true:false;
-	}
-
-	public function verificaDNI($dni){
-		$sql = "SELECT * FROM pacientes WHERE dni='".$dni."' AND baja=0";
-	    $data = $this->db->query($sql);
-	    return ($data==[])?true:false;
-	}
 }

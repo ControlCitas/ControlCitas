@@ -11,8 +11,9 @@
 			<input type="password" name="verifica" class="form-control" placeholder="Repite tu nueva clave de acceso">
 		</div>
 		<div class="form-group text-left">
-        <input type="hidden" name="id" value="<?php print $datos['data']; ?>"/>
-		<input type="submit" value="Enviar" class="btn btn-success">
+			<input type="hidden" name="id" value="<?php print $datos['data']; ?>"/>
+			<input type="hidden" name="admon" value="<?php print $datos['admon']; ?>"/>
+			<input type="submit" value="Enviar" class="btn btn-success">
 		</div>
 	</form>
 </div>

@@ -4,33 +4,35 @@
  */
 class Horarios extends Controlador
 {
-	private $modelo;
+  private $modelo;
+  private $admon;
 	
 	function __construct()
 	{
-		$this->modelo = $this->modelo("HorariosModelo");
+	    //Creamos sesion
+	    $sesion = new Sesion();
+	    if ($sesion->getLogin()) {
+		  $this->modelo = $this->modelo("HorariosModelo");
+	      $this->admon = $sesion->getAdmon();
+	    } else {
+	      header("location:".RUTA);
+	    }
 	}
 
 	public function caratula()
 	{
-		//Creamos sesion
-    	$sesion = new Sesion();
+		//Leemos los datos de la tabla
+		$data = $this->modelo->getTabla();
 
-    	if ($sesion->getLogin()) {
-    		//Leemos los datos de la tabla
-    		$data = $this->modelo->getTabla();
-
-			$datos = [
-				"titulo" => "Horarios",
-				"subtitulo" => "Listado de Horarios",
-				"menu" => true,
-				"activo" => "horarios",
-				"data" => $data
-			];
-			$this->vista("horariosCaratulaVista",$datos);
-		} else {
-			header("location:".RUTA);
-		}
+		$datos = [
+			"titulo" => "Horarios",
+			"subtitulo" => "Listado de Horarios",
+			"menu" => true,
+			"admon" => $this->admon,
+			"activo" => "horarios",
+			"data" => $data
+		];
+		$this->vista("horariosCaratulaVista",$datos);
 	}
 
 	public function alta(){
@@ -100,7 +102,7 @@ class Horarios extends Controlador
 	      "titulo" => "Alta del horario",
 	      "subtitulo" => "Alta del horario",
 	      "menu" => true,
-	      "admon" => false,
+	      "admon" => $this->admon,
 	      "errores" => $errores,
 	      "dias" => $dias_array,
 	      "duracion" => $duracion_array,
@@ -123,7 +125,7 @@ class Horarios extends Controlador
 	      "titulo" => "Baja de un horario",
 	      "subtitulo" => "Baja de un horario",
 	      "menu" => true,
-	      "admon" => false,
+	      "admon" => $this->admon,
 	      "errores" => [],
 	      "dias" => $dias_array,
 	      "duracion" => $duracion_array,
@@ -154,7 +156,7 @@ class Horarios extends Controlador
 	      "titulo" => "Modificar horarios",
 	      "subtitulo" => "Modificar horarios",
 	      "menu" => true,
-	      "admon" => false,
+	      "admon" => $this->admon,
 	      "errores" => [],
 	      "dias" => $dias_array,
 	      "duracion" => $duracion_array,

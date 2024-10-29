@@ -5,18 +5,24 @@
 class LoginModelo
 {
 	public $db;
-		
+	
 	function __construct()
 	{
 		$this->db = new MySQLdb();
 	}
 
-	public function cambiarClaveAcceso($id, $clave){
+	public function cambiarClaveAcceso($id, $clave, $admon){
 	    $r = false;
 	    $clave = hash_hmac("sha512", $clave, CLAVE);
-	    $sql = "UPDATE admon SET ";
-	    $sql.= "clave='".$clave."' ";
-	    $sql.= "WHERE id=".$id;
+	    if ($admon=="admon") {
+	    	$sql = "UPDATE admon SET ";
+		    $sql.= "clave='".$clave."' ";
+		    $sql.= "WHERE id=".$id;
+	    } else {
+	    	$sql = "UPDATE doctores SET ";
+		    $sql.= "depto='".$clave."' ";
+		    $sql.= "WHERE correo='".$id."'";
+	    }
 	    $r = $this->db->queryNoSelect($sql);
 	    return $r;
 	}
@@ -34,7 +40,6 @@ class LoginModelo
 				//
 				$msg = $nombre. ", entra a la siguiente liga para cambiar tu clave de acceso al consultorio...<br>";
 				$msg.= "<a href='".RUTA."login/cambiarclave/".$id."'>Cambiar tu clave de acceso</a>";
-			
 
 				$headers = "MIME-Version: 1.0\r\n"; 
 				$headers.= "Content-type:text/html; charset=UTF-8\r\n"; 
@@ -49,9 +54,13 @@ class LoginModelo
 		}
 	}
 
-	public function getUsuarioCorreo($email='')
+	public function getUsuarioCorreo($email='',$admon=true)
 	{
-		$sql = "SELECT * FROM admon WHERE correo='".$email."' and baja=0";
+		if($admon){
+			$sql = "SELECT * FROM admon WHERE correo='".$email."' and baja=0";	
+		} else {
+			$sql = "SELECT * FROM doctores WHERE correo='".$email."' and baja=0";
+		}
 		$data = $this->db->query($sql);
 		return $data;
 	}
@@ -74,6 +83,24 @@ class LoginModelo
 	    if (empty($data)) {
 	      array_push($errores,"No existe ese usuario, favor de verificarlo.");
 	    } else if($clave!=$data["clave"]){
+	      array_push($errores,"Clave de acceso erronea, favor de verificar.");
+	    }
+	    return $errores;
+	}
+
+	public function verificarDoctor($usuario, $clave){
+	    $errores = array();
+	    $sql = "SELECT * FROM doctores WHERE correo='".$usuario."'";
+	    if($clave!=""){
+	    	$clave = hash_hmac("sha512", $clave, CLAVE);
+	   	    $clave = substr($clave,0,200);
+	    }
+	    //consulta
+	    $data = $this->db->query($sql);
+	    //validacion
+	    if (empty($data)) {
+	      array_push($errores,"No existe ese usuario, favor de verificarlo.");
+	    } else if($clave!="" && $clave!=$data["depto"]){
 	      array_push($errores,"Clave de acceso erronea, favor de verificar.");
 	    }
 	    return $errores;

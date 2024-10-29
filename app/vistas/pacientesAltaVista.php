@@ -351,10 +351,15 @@
       ?>
       ">
       <?php
-      if (isset($datos["baja"])) { ?>
-        <a href="<?php print RUTA; ?>pacientes/bajaLogica/<?php print $datos['data']['id']; ?>" class="btn btn-danger">Borrar</a>
-        <a href="<?php print RUTA; ?>pacientes" class="btn btn-danger">Regresar</a>
-        <p><b>Advertencia: una vez borrado el registro, no podrá recuperar la información</b></p>
+      if (isset($datos["baja"])) { 
+        if ($datos["numCitas"]>0) {
+          print '<h3 class="text-center">No puede eliminar al paciente porque tiene '.$datos["numCitas"].' citas pendientes</h3>';
+        } else {
+          print '<p class="text-center"><b>Advertencia: una vez borrado el registro, no podrá recuperar la información</b></p>';
+          print '<a href="'.RUTA.'pacientes/bajaLogica/'.$datos['data']['id'].'" class="btn btn-danger">Borrar</a>';
+        }
+        print '<a href="'.RUTA.'pacientes" class="btn btn-danger">Regresar</a>';
+      ?>
       <?php } else { ?> 
       <input type="submit" value="Enviar" class="btn btn-success">
       <a href="<?php print RUTA; ?>pacientes" class="btn btn-info">Regresar</a>

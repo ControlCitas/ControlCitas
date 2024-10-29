@@ -4,25 +4,34 @@
  */
 class Tablero extends Controlador{
   private $modelo;
+  private $admon;
+  private $usuario;
 
   function __construct()
   {
-    $this->modelo = $this->modelo("TableroModelo");
-  }
-
-  function caratula(){
     $sesion = new Sesion();
     if ($sesion->getLogin()) {
-      //
-      $datos = [
-        "titulo" => "Bienvenid@ a nuestro consultorio",
-        "subtitulo" => "Bienvenid@ a nuestro consultorio",
-        "menu" => true
-      ];
-      $this->vista("tableroCaratulaVista",$datos);
+      $this->modelo = $this->modelo("TableroModelo");
+      $this->admon = $sesion->getAdmon();
+      $this->usuario = $sesion->getUsuario();
     } else {
       header("location:".RUTA);
     }
+  }
+
+  function caratula(){
+      //Leemos los datos de la tabla
+      $dataDia = $this->modelo->getCitasProximas($this->admon,$this->usuario["id"]);
+
+      //
+      $datos = [
+        "titulo" => "Próximas citas",
+        "subtitulo" => "Próximas citas",
+        "menu" => true,
+        "admon" => $this->admon,
+        "data" => $dataDia
+      ];
+      $this->vista("tableroCaratulaVista",$datos);
   }
 
   public function logout(){
@@ -32,6 +41,115 @@ class Tablero extends Controlador{
       $sesion->finalizarLogin();
     }
     header("location:".RUTA);
+  }
+
+  public function cambio($id=""){
+    if($id=="") return;
+    //Leemos los datos del registro del id
+    $data = $this->modelo->getCitaId($id);
+    $edoCita_array = $this->modelo->getLlaves("edoCita");
+    $historial = $this->modelo->getHistorialId($id);
+    //Vista Alta
+    $datos = [
+      "titulo" => "Modificar una cita",
+      "subtitulo" => "Modificar una cita",
+      "menu" => true,
+      "admon" => $this->admon,
+      "errores" => [],
+      "historial" => $historial,
+      "edoCita" => $edoCita_array,
+      "data" => $data
+    ];
+
+    if (empty($historial)) {
+      $this->vista("tableroModificaVista",$datos);
+    } else {
+      $datos["titulo"] = "Tratamiento";
+      $datos["subtitulo"] = "Tratamiento";
+      $this->vista("tableroDiagnosticoVista",$datos);
+    }
+  }
+
+  public function modificaCita(){
+    if ($_SERVER['REQUEST_METHOD']=="POST") {
+      //
+      $id = trim($_POST['id'] ?? "");
+      $edoCita = trim($_POST['edoCita'] ?? "");
+      $observacion = Helper::cadena($_POST['observacion'] ?? "");
+      //
+      if ($id!="") {
+        if ($edoCita==REALIZADA) {
+          $data = $this->modelo->getCitaId($id);
+          //Vista Alta
+          $datos = [
+            "titulo" => "Diagnóstico",
+            "subtitulo" => "Diagnóstico",
+            "menu" => true,
+            "admon" => $this->admon,
+            "errores" => [],
+            "data" => $data
+          ];
+          $this->vista("tableroDiagnosticoVista",$datos);
+        } else {
+          $this->modelo->modifica($id,$edoCita,$observacion);
+          header("location:".RUTA."tablero");
+        }
+      }
+    }
+  }
+
+  public function modificaTratamiento()
+  {
+    $errores = [];
+    if ($_SERVER['REQUEST_METHOD']=="POST") {
+      //
+      $id = trim($_POST['id'] ?? "");
+      $costo = trim($_POST['costo'] ?? "");
+      $tratamiento = Helper::cadena($_POST['tratamiento'] ?? "");
+      $costo=Helper::numero($costo);
+      if ($tratamiento=="") {
+        array_push($errores,"El tratamiento es requerido.");
+      }
+      if (empty($errores)) {
+        if(empty($this->modelo->getHistorialId($id))){
+          if($this->modelo->setHistorial($id,$tratamiento,$costo)){
+            $titulo = $subtitulo = "Inserción correcta";
+            $mensaje = "El tratamiento se insertó exitosamente.";
+            $url = "tablero";
+            $this->mensajeResultado($titulo, $subtitulo, $mensaje, $url, "success");
+          } else {
+            $titulo = $subtitulo = "Inserción incorrecta";
+            $mensaje = "El tratamiento no se insertó exitosamente. Inténtelo más tarde.";
+            $url = "tablero";
+            $this->mensajeResultado($titulo, $subtitulo, $mensaje, $url, "danger");
+          }
+        } else {
+          if($this->modelo->updateHistorial($id,$tratamiento,$costo)){
+            $titulo = $subtitulo = "Actualización correcta";
+            $mensaje = "El tratamiento se actualizó exitosamente.";
+            $url = "tablero";
+            $this->mensajeResultado($titulo, $subtitulo, $mensaje, $url, "success");
+          } else {
+            $titulo = $subtitulo = "Actualización incorrecta";
+            $mensaje = "El tratamiento no se actualizó exitosamente. Inténtelo más tarde.";
+            $url = "tablero";
+            $this->mensajeResultado($titulo, $subtitulo, $mensaje, $url, "danger");
+          }
+        }
+      } else {
+        $data = $this->modelo->getCitaId($id);
+        //Vista Alta
+        $datos = [
+          "titulo" => "Diagnóstico",
+          "subtitulo" => "Diagnóstico",
+          "menu" => true,
+          "admon" => $this->admon,
+          "errores" => $errores,
+          "data" => $data
+        ];
+        $this->vista("tableroDiagnosticoVista",$datos);
+      }
+    }
   }
 
   public function perfil(){
@@ -76,7 +194,7 @@ class Tablero extends Controlador{
       }
       if (empty($errores)) {
         //Iniciamos sesión
-        if($this->modelo->setUsuario($id, $nombre, $correo, $clave1)){
+        if($this->modelo->setUsuarioDoctor($id, $nombre, $correo, $clave1)){
           $sesion = new Sesion();
           $data = $this->modelo->getUsuarioId($id);
           $sesion->iniciarLogin($data);
@@ -89,24 +207,111 @@ class Tablero extends Controlador{
       }      
     }
 
-    //Leemos los datos del registro del id
-    session_start();
-    if (isset($_SESSION["usuario"])) {
-      $data = $_SESSION["usuario"];
-    } else {
-      header("location:".RUTA);
-    }
     //Vista Alta
     $datos = [
       "titulo" => "Perfil del usuario",
       "subtitulo" => "Perfil del usuario",
       "menu" => true,
+      "admon" => $this->admon,
       "activo" => 'perfil',
       "errores" => $errores,
-      "data" => $data
+      "data" => $this->usuario
     ];
-    $this->vista("tableroPerfilVista",$datos);
+    if ($this->admon) {
+      $this->vista("tableroPerfilVista",$datos);
+    } else {
+      $this->vista("doctoresPerfilVista",$datos);
+    }
   }
 
+  public function perfilDoctor(){
+    $errores = [];
+    if ($_SERVER['REQUEST_METHOD']=="POST") {
+      //
+      $id = $_POST['id'] ?? "";
+      $nombre = Helper::cadena($_POST['nombre'] ?? "");
+      $apellidos = Helper::cadena($_POST['apellidos'] ?? "");
+      $correo = $_POST['correo'] ?? "";
+      $direccion = Helper::cadena($_POST['direccion'] ?? "");
+      $telefono = Helper::cadena($_POST['telefono'] ?? "");
+      $perfil = Helper::cadena($_POST['perfil'] ?? "");
+      $clave = $_POST['clave'] ?? "";
+      $clave1 = $_POST['clave1'] ?? "";
+      $clave2 = $_POST['clave2'] ?? "";
+
+      if($id==""){
+        array_push($errores,"Error en el identificador del usuario.");
+      }
+
+      if($nombre==""){
+        array_push($errores,"El nombre es un valor requerido.");
+      }
+
+      if($correo==""){
+        array_push($errores,"El correo electrónico es requerido.");
+      }
+
+      if(Helper::correo($correo)==false){
+        array_push($errores,"El correo electrónico no es correcto.");
+      }
+
+      if($clave==str_repeat("x",12)){
+        $clave1 = $clave2 = "";
+      } else {
+        if($this->modelo->verificarDoctor($id,$clave)){
+          if ($clave1=="") {
+            array_push($errores, "La nueva clave de acceso es requerida.");
+          }
+          if ($clave2=="") {
+            array_push($errores, "La clave de acceso de verificación es requerida.");
+          }
+          if ($clave1!=$clave2) {
+            array_push($errores, "Las nuevas claves de acceso no coinciden.");
+          }
+        } else {       
+          array_push($errores, "Algún dato es erróneo, favor de verificar.");
+        } 
+      }
+      if (empty($errores)) {
+        $data = [
+          "id" => $id,
+          "nombre" => $nombre,
+          "apellidos" => $apellidos,
+          "correo" => $correo,
+          "direccion" => $direccion,
+          "telefono" => $telefono,
+          "perfil" => $perfil,
+          "clave" => $clave1
+        ];
+        //Actualizamos sesión
+        if($this->modelo->setUsuarioDoctor($data)){
+          $sesion = new Sesion();
+          $data = $this->modelo->getUsuarioIdDoctor($id);
+          $sesion->iniciarLogin($data,false);
+          //
+          header("location:".RUTA."tablero");
+        } else {
+          print "Error al actualizar los datos";
+          exit(0);
+        }
+      }      
+    }
+
+    //Vista Alta
+    $datos = [
+      "titulo" => "Perfil del usuario",
+      "subtitulo" => "Perfil del usuario",
+      "menu" => true,
+      "admon" => $this->admon,
+      "activo" => 'perfil',
+      "errores" => $errores,
+      "data" => $this->usuario
+    ];
+    if ($this->admon) {
+      $this->vista("tableroPerfilVista",$datos);
+    } else {
+      $this->vista("doctoresPerfilVista",$datos);
+    }
+  }
 }
 ?>

@@ -26,7 +26,7 @@ class Helper
     //
     $buscar  = array('^', 'delete', 'drop','truncate','exec','system');
     $reemplazar = array('-', 'dele*te', 'dr*op','truneca*te','ex*ec','syst*em');
-    $cadena = str_replace($buscar, $reemplazar, $cadena);
+    $cadena = trim(str_replace($buscar, $reemplazar, $cadena));
     $cadena = addslashes(htmlentities($cadena));
     return $cadena;
   }
@@ -72,7 +72,12 @@ class Helper
        return false;
      } else {
        return true;
-     }                                                                                
+     }
+  }
+
+  public static function correo($correo='')
+  {
+    return filter_var($correo, FILTER_VALIDATE_EMAIL);
   }
 }
 ?>

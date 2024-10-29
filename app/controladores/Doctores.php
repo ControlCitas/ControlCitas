@@ -4,33 +4,35 @@
  */
 class Doctores extends Controlador
 {
-	private $modelo;
+  private $modelo;
+  private $admon;
 	
 	function __construct()
 	{
-		$this->modelo = $this->modelo("DoctoresModelo");
+	    //Creamos sesion
+	    $sesion = new Sesion();
+	    if ($sesion->getLogin()) {
+		  $this->modelo = $this->modelo("DoctoresModelo");
+	      $this->admon = $sesion->getAdmon();
+	    } else {
+	      header("location:".RUTA);
+	    }
 	}
 
 	public function caratula()
 	{
-		//Creamos sesion
-    	$sesion = new Sesion();
+		//Leemos los datos de la tabla
+		$data = $this->modelo->getDoctores();
 
-    	if ($sesion->getLogin()) {
-    		//Leemos los datos de la tabla
-    		$data = $this->modelo->getDoctores();
-
-			$datos = [
-				"titulo" => "Doctores",
-				"subtitulo" => "Listado de doctores",
-				"menu" => true,
-				"activo" => "doctores",
-				"data" => $data
-			];
-			$this->vista("doctoresCaratulaVista",$datos);
-		} else {
-			header("location:".RUTA);
-		}
+		$datos = [
+			"titulo" => "Doctores",
+			"subtitulo" => "Listado de doctores",
+			"menu" => true,
+			"admon" =>  $this->admon,
+			"activo" => "doctores",
+			"data" => $data
+		];
+		$this->vista("doctoresCaratulaVista",$datos);
 	}
 
 	public function alta(){
@@ -47,7 +49,7 @@ class Doctores extends Controlador
 	      $correo = Helper::cadena($_POST['correo'] ?? "");
 	      $direccion = Helper::cadena($_POST['direccion'] ?? "");
 	      $telefono = Helper::cadena($_POST['telefono'] ?? "0");
-	      $depto = Helper::cadena($_POST['depto'] ?? "");
+	      //$depto = Helper::cadena($_POST['depto'] ?? "");
 	      $perfil = Helper::cadena($_POST['perfil'] ?? "");
 
 	      //Validamos la información
@@ -63,9 +65,9 @@ class Doctores extends Controlador
 	      if(empty($telefono)){
 	        array_push($errores,"El teléfono del doctor es requerido.");
 	      }
-	      if(empty($depto)){
-	        array_push($errores,"El departamento del doctor es requerido.");
-	      }
+	      // if(empty($depto)){
+	      //   array_push($errores,"El departamento del doctor es requerido.");
+	      // }
 	      if(empty($perfil)){
 	        array_push($errores,"El perfil del doctor es requerido.");
 	      }
@@ -78,7 +80,7 @@ class Doctores extends Controlador
 	        "correo" => $correo,
 	        "direccion" => $direccion,
 	        "telefono" => $telefono,
-	        "depto" => $depto,
+	        //"depto" => $depto,
 	        "perfil" => $perfil
 	      ];
 
@@ -103,6 +105,7 @@ class Doctores extends Controlador
 	      "titulo" => "Alta del doctor",
 	      "subtitulo" => "Alta del doctor",
 	      "menu" => true,
+	      "admon" =>  $this->admon,
 	      "activo" => 'doctores',
 	      "errores" => $errores,
 	      "data" => $data
@@ -114,13 +117,19 @@ class Doctores extends Controlador
 	public function baja($id=""){
 	    //Leemos los datos del registro del id
 	    $data = $this->modelo->getDoctorId($id);
+	    $numCitas = $this->modelo->getNumCitasDoctores($id);
+	    $numHorarios = $this->modelo->getNumHorariosDoctores($id);
+	    $numCitas = $numCitas["count(*)"];
+	    $numHorarios = $numHorarios["count(*)"];
 
 	    //Vista baja
 	    $datos = [
 	      "titulo" => "Baja de un doctor",
 	      "subtitulo" => "Baja de un doctor",
 	      "menu" => true,
-	      "admon" => false,
+	      "admon" =>  $this->admon,
+	      "numCitas" => $numCitas,
+	      "numHorarios" => $numHorarios,
 	      "errores" => [],
 	      "activo" => 'doctores',
 	      "data" => $data,
@@ -146,7 +155,7 @@ class Doctores extends Controlador
 	      "titulo" => "Modificar doctores",
 	      "subtitulo" => "Modificar doctores",
 	      "menu" => true,
-	      "admon" => false,
+	      "admon" =>  $this->admon,
 	      "activo" => 'doctores',
 	      "errores" => [],
 	      "data" => $data
