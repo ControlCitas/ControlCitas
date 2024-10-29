@@ -34,15 +34,6 @@ class Tablero extends Controlador{
       $this->vista("tableroCaratulaVista",$datos);
   }
 
-  public function logout(){
-    session_start();
-    if (isset($_SESSION["usuario"])) {
-      $sesion = new Sesion();
-      $sesion->finalizarLogin();
-    }
-    header("location:".RUTA);
-  }
-
   public function cambio($id=""){
     if($id=="") return;
     //Leemos los datos del registro del id
@@ -64,10 +55,95 @@ class Tablero extends Controlador{
     if (empty($historial)) {
       $this->vista("tableroModificaVista",$datos);
     } else {
+      //
+      //Leemos los archivos
+      //
+      $carpeta = 'doc/'.$id."/";
+      if (file_exists($carpeta)) {
+        $archivos_array  = scandir($carpeta);
+      } else {
+        $archivos_array  = [];
+      }
+      //
+      //Enviamos los archivos
+      //
+      $datos["archivos"] = $archivos_array;
       $datos["titulo"] = "Tratamiento";
       $datos["subtitulo"] = "Tratamiento";
       $this->vista("tableroDiagnosticoVista",$datos);
     }
+  }
+
+  public function foto($idCita='', $archivo="")
+  {
+    if ($idCita=="") return false;
+    //Vista archivo
+    $datos = [
+      "titulo" => "Visualizar un archivo",
+      "subtitulo" => "Visualizar un archivo",
+      "menu" => true,
+      "admon" => $this->admon,
+      "errores" => [],
+      "data" => [
+        "idCita" => $idCita,
+        "archivo" => $archivo
+      ]
+    ];
+    $this->vista("tableroFotoVista",$datos);
+  }
+
+  public function fotoBorrar()
+  {
+    if ($_SERVER['REQUEST_METHOD']=="POST") {
+      $idCita = trim($_POST['idCita'] ?? "");
+      $archivo = trim($_POST['archivo'] ?? "");
+      //Vista archivo
+      $datos = [
+        "titulo" => "Confirmar borrar un archivo",
+        "subtitulo" => "Confirmar borrar un archivo",
+        "menu" => true,
+        "admon" => $this->admon,
+        "baja" => true,
+        "errores" => [],
+        "data" => [
+          "idCita" => $idCita,
+          "archivo" => $archivo
+        ]
+      ];
+      $this->vista("tableroFotoVista",$datos);
+    }
+  }
+
+  public function fotoBaja($idCita='', $archivo="")
+  {
+    if ($idCita=="") return false;
+    $archivo = "doc/".$idCita."/".$archivo;
+    if (file_exists($archivo)) {
+      if(unlink($archivo)){
+        $titulo = $subtitulo = "Borrar archivo";
+        $mensaje = "El archivo se borró exitosamente.";
+        $url = "tablero";
+        $this->mensajeResultado($titulo, $subtitulo, $mensaje, $url, "success");
+      } else {
+        $titulo = $subtitulo = "Error";
+        $mensaje = "El archivo no se borró exitosamente.";
+        $url = "tablero";
+        $this->mensajeResultado($titulo, $subtitulo, $mensaje, $url, "danger");
+      }
+    } else {
+      $titulo = $subtitulo = "Error";
+      $mensaje = "El archivo no se borró exitosamente.";
+      $url = "tablero";
+      $this->mensajeResultado($titulo, $subtitulo, $mensaje, $url, "danger");
+    }
+  }
+  public function logout(){
+    session_start();
+    if (isset($_SESSION["usuario"])) {
+      $sesion = new Sesion();
+      $sesion->finalizarLogin();
+    }
+    header("location:".RUTA);
   }
 
   public function modificaCita(){
@@ -109,6 +185,34 @@ class Tablero extends Controlador{
       $costo=Helper::numero($costo);
       if ($tratamiento=="") {
         array_push($errores,"El tratamiento es requerido.");
+      }
+      //
+      // Imagenes
+      //
+      if($_FILES['archivos']){
+        $carpeta = 'doc/'.$id."/";
+        if (!file_exists($carpeta)) {
+            mkdir($carpeta, 0777, true);
+        }
+        //
+        $archivos_array = [];
+        $archivos_num = count($_FILES['archivos']['name']);
+        $archivos_keys = array_keys($_FILES['archivos']);
+
+        for ($i=0; $i<$archivos_num; $i++) {
+            foreach ($archivos_keys as $key) {
+                $archivos_array[$i][$key] = $_FILES['archivos'][$key][$i];
+            }
+        }
+        // 
+        foreach ($archivos_array as $archivo) {
+          $nombre = Helper::archivo($archivo['name']);
+          //Subir el archivo
+          if (is_uploaded_file($archivo['tmp_name'])) {
+            //copiamos el archivo temporal
+            copy($archivo['tmp_name'],$carpeta.$nombre);
+          } 
+        }
       }
       if (empty($errores)) {
         if(empty($this->modelo->getHistorialId($id))){

@@ -43,8 +43,24 @@
 
     <div class="form-group text-left">
       <h3>Fotos:</h3>
-      <input type="file" name="archivos" class="form-control" multiple />
+      <input type="file" name="archivos[]" class="form-control" multiple/>
     </div>
+
+    <?php
+    if (isset($datos["archivos"])) {
+      print "<hr>";
+      for ($i=0; $i < count($datos["archivos"]); $i++) {
+        if ($datos['archivos'][$i]!="." && $datos['archivos'][$i]!="..") {
+          print "<a href='".RUTA."tablero/foto/".$datos['data']["id"]."/".$datos['archivos'][$i]."'>";
+          print "<img src='".RUTA."public/doc/".$datos['data']["id"]."/".$datos['archivos'][$i]."' ";
+          print "class='img-responsive' style='height:100px;' ";
+          print "alt='".$datos['archivos'][$i]."'/>";
+          print "</a>";
+        }
+      }
+      print "<hr>";
+    }
+    ?>
 
     <input type="submit" value="Modificar estado de la cita" class="btn btn-success">
     <a href="<?php print RUTA; ?>tablero" class="btn btn-info">Regresar</a>
