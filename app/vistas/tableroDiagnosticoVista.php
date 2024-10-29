@@ -1,4 +1,5 @@
 <?php include_once("encabezado.php"); ?>
+<script src="<?php print RUTA; ?>js/tableroDiagnosticoVista.js"></script>
 <h1 class="text-center">
   <?php
   if (isset($datos["subtitulo"])) {
@@ -43,22 +44,44 @@
 
     <div class="form-group text-left">
       <h3>Fotos:</h3>
-      <input type="file" name="archivos[]" class="form-control" multiple/>
+      <input type="file" name="archivos[]" id="archivos" class="form-control" multiple accept=".jpg, .jpeg, .gif, .png" />
     </div>
 
     <?php
-    if (isset($datos["archivos"])) {
-      print "<hr>";
+    if (isset($datos["archivos"]) && count($datos["archivos"])>0) {
+      print '<table class="table table-striped" width="100%">';
+      print '<thead>';
+      print '<tr>';
+      print '<th>Imagen</th>';
+      print '<th>Nombre</th>';
+      print '<th>Ancho</th>';
+      print '<th>Alto</th>';
+      print '<th>Tamaño</th>';
+      print '</tr>';
+      print '</thead>';
+      print '<tbody>';
       for ($i=0; $i < count($datos["archivos"]); $i++) {
         if ($datos['archivos'][$i]!="." && $datos['archivos'][$i]!="..") {
+          $archivo = RUTA."public/doc/".$datos['data']["id"]."/".$datos['archivos'][$i];
+          $info = getimagesize("doc/".$datos['data']["id"]."/".$datos['archivos'][$i]);
+          $size = filesize("doc/".$datos['data']["id"]."/".$datos['archivos'][$i]);
+          print "<tr>";
+          print "<td>";
           print "<a href='".RUTA."tablero/foto/".$datos['data']["id"]."/".$datos['archivos'][$i]."'>";
-          print "<img src='".RUTA."public/doc/".$datos['data']["id"]."/".$datos['archivos'][$i]."' ";
+          print "<img src='".$archivo."' ";
           print "class='img-responsive' style='height:100px;' ";
           print "alt='".$datos['archivos'][$i]."'/>";
           print "</a>";
+          print "</td>";
+          print "<td>".$datos['archivos'][$i]."</td>";
+          print "<td>".$info[0]."</td>";
+          print "<td>".$info[1]."</td>";
+          print "<td>".Helper::medidaSize($size)."</td>";
+          print "<tr>";
         }
       }
-      print "<hr>";
+      print '</tbody>';
+      print "</table>";
     }
     ?>
 

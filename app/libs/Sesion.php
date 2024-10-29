@@ -45,6 +45,7 @@ class Sesion{
   public function getAdmon(){
     return $this->admon;
   }
+
 }
 
 ?>

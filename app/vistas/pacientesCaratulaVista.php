@@ -32,7 +32,9 @@
     ?>
   </tbody>
   </table>
+
 </div><!--card-->
 <a href="<?php print RUTA; ?>pacientes/alta" class="btn btn-success">
   Dar de alta un paciente</a>
+
 <?php include_once("piepagina.php"); ?>

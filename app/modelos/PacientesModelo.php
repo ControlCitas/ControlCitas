@@ -50,8 +50,8 @@ class PacientesModelo extends Llaves
 	    return $this->db->queryNoSelect($sql);
 	}
 
-	public function getPacientes(){
-		$sql = "SELECT * FROM pacientes WHERE baja=0";
+	public function getPacientes($inicio,$tamanioPagina){
+		$sql = "SELECT * FROM pacientes WHERE baja=0 LIMIT ".$inicio.", ".$tamanioPagina;
 	    $data = $this->db->querySelect($sql);
 	    return $data;
 	}
@@ -60,6 +60,15 @@ class PacientesModelo extends Llaves
 		$sql = "SELECT * FROM pacientes WHERE id=".$id." AND baja=0";
 	    $data = $this->db->query($sql);
 	    return $data;
+	}
+
+	public function getNumPacientes(){
+		$sql = "SELECT count(*) FROM pacientes WHERE baja=0";
+	    $data = $this->db->query($sql);
+	    if ($data["count(*)"]) {
+	    	return $data["count(*)"];
+	    }
+	    return 0;
 	}
 
 	public function getCitasPaciente($id){
@@ -103,5 +112,17 @@ class PacientesModelo extends Llaves
 	     $salida = $this->db->queryNoSelect($sql);
 	    }
 	    return $salida;
+	}
+
+	public function verificaCorreo($correo){
+		$sql = "SELECT * FROM pacientes WHERE correo='".$correo."' AND baja=0";
+	    $data = $this->db->query($sql);
+	    return ($data==[])?true:false;
+	}
+
+	public function verificaDNI($dni){
+		$sql = "SELECT * FROM pacientes WHERE dni='".$dni."' AND baja=0";
+	    $data = $this->db->query($sql);
+	    return ($data==[])?true:false;
 	}
 }

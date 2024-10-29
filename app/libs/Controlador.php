@@ -44,4 +44,13 @@ class Controlador{
 		];
 		$this->vista("mensajeVista",$datos);
 	}
+
+	// public function pagina($pagina=1)
+	// {
+	// 	if (isset($_GET["p"])) {
+	// 		$pagina = $_GET["p"];
+	// 	} else {
+	// 		$pagina = 1;
+	// 	}
+	// }
 }

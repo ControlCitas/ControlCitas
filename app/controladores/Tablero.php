@@ -6,6 +6,7 @@ class Tablero extends Controlador{
   private $modelo;
   private $admon;
   private $usuario;
+  private $pagina;
 
   function __construct()
   {
@@ -183,6 +184,12 @@ class Tablero extends Controlador{
       $costo = trim($_POST['costo'] ?? "");
       $tratamiento = Helper::cadena($_POST['tratamiento'] ?? "");
       $costo=Helper::numero($costo);
+      $archivoTipo_array = $this->modelo->getLlaves("archivo");
+      $tipos_array = [];
+      foreach($archivoTipo_array as $archivo){
+        array_push($tipos_array, $archivo["cadena"]);
+      }
+      //
       if ($tratamiento=="") {
         array_push($errores,"El tratamiento es requerido.");
       }
@@ -198,20 +205,32 @@ class Tablero extends Controlador{
         $archivos_array = [];
         $archivos_num = count($_FILES['archivos']['name']);
         $archivos_keys = array_keys($_FILES['archivos']);
+        $erroresCarga_array = [];
 
         for ($i=0; $i<$archivos_num; $i++) {
             foreach ($archivos_keys as $key) {
                 $archivos_array[$i][$key] = $_FILES['archivos'][$key][$i];
             }
         }
-        // 
+        //
         foreach ($archivos_array as $archivo) {
           $nombre = Helper::archivo($archivo['name']);
-          //Subir el archivo
-          if (is_uploaded_file($archivo['tmp_name'])) {
-            //copiamos el archivo temporal
-            copy($archivo['tmp_name'],$carpeta.$nombre);
-          } 
+          $extension =$archivo['type'];
+          if ($archivo['size']<40*1024*1024) {
+             if (in_array($extension, $tipos_array)) {
+              //Subir el archivo
+              if (is_uploaded_file($archivo['tmp_name'])) {
+                //copiamos el archivo temporal
+                copy($archivo['tmp_name'],$carpeta.$nombre);
+              } 
+            } else {
+              array_push($erroresCarga_array,"No se cargó el archivo ".$nombre."<br>");
+            }
+          } else {
+            array_push($erroresCarga_array,"No se cargó el archivo ".$nombre." por su tamaño<br>");
+          }
+          
+         
         }
       }
       if (empty($errores)) {
@@ -219,11 +238,13 @@ class Tablero extends Controlador{
           if($this->modelo->setHistorial($id,$tratamiento,$costo)){
             $titulo = $subtitulo = "Inserción correcta";
             $mensaje = "El tratamiento se insertó exitosamente.";
+            $mensaje.= "<br>".implode($erroresCarga_array);
             $url = "tablero";
             $this->mensajeResultado($titulo, $subtitulo, $mensaje, $url, "success");
           } else {
             $titulo = $subtitulo = "Inserción incorrecta";
             $mensaje = "El tratamiento no se insertó exitosamente. Inténtelo más tarde.";
+            $mensaje.= "<br>".implode($erroresCarga_array);
             $url = "tablero";
             $this->mensajeResultado($titulo, $subtitulo, $mensaje, $url, "danger");
           }
@@ -231,11 +252,13 @@ class Tablero extends Controlador{
           if($this->modelo->updateHistorial($id,$tratamiento,$costo)){
             $titulo = $subtitulo = "Actualización correcta";
             $mensaje = "El tratamiento se actualizó exitosamente.";
+            $mensaje.= "<br>".implode($erroresCarga_array);
             $url = "tablero";
             $this->mensajeResultado($titulo, $subtitulo, $mensaje, $url, "success");
           } else {
             $titulo = $subtitulo = "Actualización incorrecta";
             $mensaje = "El tratamiento no se actualizó exitosamente. Inténtelo más tarde.";
+            $mensaje.= "<br>".implode($erroresCarga_array);
             $url = "tablero";
             $this->mensajeResultado($titulo, $subtitulo, $mensaje, $url, "danger");
           }

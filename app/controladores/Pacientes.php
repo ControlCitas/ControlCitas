@@ -20,10 +20,13 @@ class Pacientes extends Controlador
 	}
 
 
-	public function caratula()
+	public function caratula($pagina=1)
 	{
 		//Leemos los datos de la tabla
-		$data = $this->modelo->getPacientes();
+		$num = $this->modelo->getNumPacientes();
+		$inicio = ($pagina-1)*TAMANO_PAGINA;
+		$totalPaginas = ceil($num/TAMANO_PAGINA);
+		$data = $this->modelo->getPacientes($inicio,TAMANO_PAGINA);
 
 		$datos = [
 			"titulo" => "Pacientes",
@@ -31,6 +34,11 @@ class Pacientes extends Controlador
 			"menu" => true,
 			"admon" => $this->admon,
 			"activo" => "pacientes",
+			"pag" => [
+				"totalPaginas" => $totalPaginas,
+				"regresa" => "pacientes",
+				"pagina" => $pagina
+			],
 			"data" => $data
 		];
 		$this->vista("pacientesCaratulaVista",$datos);
@@ -92,13 +100,19 @@ class Pacientes extends Controlador
 	        array_push($errores,"El teléfono del paciente es requerido.");
 	      }
 	      if(empty($dni)){
-	        array_push($errores,"El departamento del paciente es requerido.");
+	        array_push($errores,"El DNI del paciente es requerido.");
 	      }
 	      if(!Helper::fecha($fechaNacimiento)){
 	        array_push($errores,"La fecha de nacimiento del paciente es requerido.");
 	      }
 	      if($genero=="void"){
 	        array_push($errores,"El perfil del paciente es requerido.");
+	      }
+	      if(trim($id)=="" && $this->modelo->verificaCorreo($correo)==false){
+	        array_push($errores,"Ya existe ese correo. El correo debe ser único.");
+	      }
+	      if(trim($id)=="" && $this->modelo->verificaDNI($dni)==false){
+	        array_push($errores,"Ya existe ese DNI. El DNI debe ser único.");
 	      }
 	      //Crear arreglo de datos
 	      $data = [

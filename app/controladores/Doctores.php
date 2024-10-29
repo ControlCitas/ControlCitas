@@ -19,10 +19,14 @@ class Doctores extends Controlador
 	    }
 	}
 
-	public function caratula()
+	public function caratula($pagina=1)
 	{
 		//Leemos los datos de la tabla
-		$data = $this->modelo->getDoctores();
+		$num = $this->modelo->getNumDoctores();
+		$inicio = ($pagina-1)*TAMANO_PAGINA;
+		$totalPaginas = ceil($num/TAMANO_PAGINA);
+		$data = $this->modelo->getDoctores($inicio,TAMANO_PAGINA);
+		//var_dump($num,$inicio,$totalPaginas);
 
 		$datos = [
 			"titulo" => "Doctores",
