@@ -36,8 +36,8 @@ class DoctoresModelo
 	    return $this->db->queryNoSelect($sql);
 	}
 
-	public function getDoctores($inicio,$tamanioPagina){
-		$sql = "SELECT * FROM doctores WHERE baja=0 LIMIT ".$inicio.", ".$tamanioPagina;
+	public function getDoctores(){
+		$sql = "SELECT * FROM doctores WHERE baja=0";
 	    $data = $this->db->querySelect($sql);
 	    return $data;
 	}

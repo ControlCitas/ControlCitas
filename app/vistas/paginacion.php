@@ -14,7 +14,7 @@ if($totalPaginas > PAGINAS_MAXIMAS){
 		$inicio = $pagina;
 		$fin = $inicio-1 + PAGINAS_MAXIMAS;
 	}
-	if($fin>=$totalPaginas){
+	if($fin>$totalPaginas){
 		$inicio = $totalPaginas - PAGINAS_MAXIMAS + 1;
 		$fin = $totalPaginas;
 	}
