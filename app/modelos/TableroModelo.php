@@ -11,36 +11,6 @@ class TableroModelo extends Llaves
 		$this->db = new MySQLdb();
 	}
 
-	public function setUsuario($id, $nombre, $correo, $clave){
-	    $sql = "UPDATE admon SET ";
-	    $sql.= "nombre='".$nombre."', ";
-	    $sql.= "correo='".$correo."' ";
-	    if($clave!=""){
-	      $clave = hash_hmac("sha512", $clave, LLAVE);
-	      $sql.= ", clave='".$clave."' ";
-	    }
-	    $sql.= "WHERE id=".$id;
-	    return $this->db->queryNoSelect($sql);
-	}
-
-	public function setUsuarioDoctor($data){
-		$sql = "UPDATE  doctores SET ";                   //1. id
-		$sql.= "foto='', ";              				  //2. foto
-		$sql.= "nombre='".$data['nombre']."', ";          //3. nombre
-		$sql.= "apellidos='".$data['apellidos']."', ";    //4. apellidos
-		$sql.= "correo='".$data['correo']."', ";          //5. correo
-		$sql.= "direccion='".$data['direccion']."', ";    //6. descuento 
-		$sql.= "telefono='".$data['telefono']."', ";      //7. envio
-		if($data['clave']!=""){
-	      $clave = hash_hmac("sha512", $data['clave'], LLAVE);
-	      $sql.= "depto='".$clave."', ";
-	    }
-		$sql.= "perfil='".$data['perfil']."', ";          //9. fecha
-		$sql.= "baja=0, ";                                //16. baja
-		$sql.= "modificado_dt=(NOW()) ";                  //18. fecha modificado
-		$sql.= "WHERE id=".$data['id'];
-	    return $this->db->queryNoSelect($sql);
-	}
 
 	public function getUsuarioId($id){
 		$sql = "SELECT * FROM admon WHERE id=".$id." AND baja=0";
@@ -92,6 +62,15 @@ class TableroModelo extends Llaves
 		return $data;
 	}
 
+	public function getDepurar($dias=10){
+		$sql = "SELECT * FROM citas WHERE ";
+		$sql.= "(fecha<DATE_SUB(curdate(), INTERVAL ".$dias." DAY) AND ";
+		$sql.= "edoCita <> ".REALIZADA.") OR baja=1";
+		$data = $this->db->querySelect($sql);
+		//var_dump($sql);
+		return $data;
+	}
+
 	public function modifica($id,$edoCita,$observacion=""){
 		$salida = false;
 		if ($id!="") {
@@ -119,6 +98,64 @@ class TableroModelo extends Llaves
 			$salida = $this->db->queryNoSelect($sql);
 		}
 		return $salida;
+	}
+
+	public function setUsuario($id, $nombre, $correo, $clave){
+	    $sql = "UPDATE admon SET ";
+	    $sql.= "nombre='".$nombre."', ";
+	    $sql.= "correo='".$correo."' ";
+	    if($clave!=""){
+	      $clave = hash_hmac("sha512", $clave, LLAVE);
+	      $sql.= ", clave='".$clave."' ";
+	    }
+	    $sql.= "WHERE id=".$id;
+	    return $this->db->queryNoSelect($sql);
+	}
+
+	public function setUsuarioDoctor($data){
+		$sql = "UPDATE  doctores SET ";                   //1. id
+		$sql.= "foto='', ";              				  //2. foto
+		$sql.= "nombre='".$data['nombre']."', ";          //3. nombre
+		$sql.= "apellidos='".$data['apellidos']."', ";    //4. apellidos
+		$sql.= "correo='".$data['correo']."', ";          //5. correo
+		$sql.= "direccion='".$data['direccion']."', ";    //6. descuento 
+		$sql.= "telefono='".$data['telefono']."', ";      //7. envio
+		if($data['clave']!=""){
+	      $clave = hash_hmac("sha512", $data['clave'], LLAVE);
+	      $sql.= "depto='".$clave."', ";
+	    }
+		$sql.= "perfil='".$data['perfil']."', ";          //9. fecha
+		$sql.= "baja=0, ";                                //16. baja
+		$sql.= "modificado_dt=(NOW()) ";                  //18. fecha modificado
+		$sql.= "WHERE id=".$data['id'];
+	    return $this->db->queryNoSelect($sql);
+	}
+
+	public function setInsertarHistorico($data){
+		$sql = "INSERT INTO citas_historico VALUES(0,";      //1. id
+		$sql.= "'".$data['idPaciente']."', ";        //2. paciente    
+		$sql.= "'".$data['idDoctor']."', ";          //3. doctor
+		$sql.= "'".$data['fecha']."', ";           //4. fecha
+		$sql.= "'".$data['horario']."', ";            //5. horario
+		$sql.= "'".$data['observacion']."', ";     //6. observacion
+		$sql.= "'".$data['edoCita']."', ";     		//7. estado cita
+		$sql.= "'".$data['baja']."', ";     		//8. baja
+		$sql.= "'".$data['baja_dt']."', ";     		//9. fecha baja
+		$sql.= "'".$data['modificado_dt']."', ";    //10. fecha modificado 
+		$sql.= "'".$data['creado_dt']."')";     	//11. fecha alta-creado
+		//print $sql;
+		return $this->db->queryNoSelect($sql);
+	}
+
+	public function setElimitarHistorico($data='')
+	{
+		if ($data!="") {
+		  	$salida = false;
+			$sql = "DELETE FROM citas WHERE id=".$data["id"];
+			//print $sql;
+			$salida = $this->db->queryNoSelect($sql);
+			return $salida;
+		}
 	}
 
 	public function updateHistorial($idCita,$tratamiento,$costo){

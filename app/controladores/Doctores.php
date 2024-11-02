@@ -138,7 +138,7 @@ class Doctores extends Controlador
 	    $this->vista("doctoresAltaVista",$datos);
 	  }
 
-  	public function bajaLogica($id=''){
+  public function bajaLogica($id=''){
 	   if (isset($id)) {
 	     if($this->modelo->bajaLogica($id)){
 	      header("location:".RUTA."doctores");

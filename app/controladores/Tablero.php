@@ -15,6 +15,7 @@ class Tablero extends Controlador{
       $this->modelo = $this->modelo("TableroModelo");
       $this->admon = $sesion->getAdmon();
       $this->usuario = $sesion->getUsuario();
+      $this->depurar();
     } else {
       header("location:".RUTA);
     }
@@ -72,6 +73,29 @@ class Tablero extends Controlador{
       $datos["titulo"] = "Tratamiento";
       $datos["subtitulo"] = "Tratamiento";
       $this->vista("tableroDiagnosticoVista",$datos);
+    }
+  }
+
+  public function depurar()
+  {
+    $data = $this->modelo->getDepurar(3);
+    // print "<pre>";
+    // var_dump($data);
+    // print "</pre>";
+    // exit;
+    for ($i=0; $i < count($data); $i++) { 
+      if ($this->modelo->setInsertarHistorico($data[$i])) {
+        if ($this->modelo->setElimitarHistorico($data[$i])==false) {
+          $mensaje = "Error al borrar el registro en el histórico.";
+          $url = "tablero";
+          $this->mensajeResultado($titulo, $subtitulo, $mensaje, $url, "danger");
+          break;
+        }
+      } else {
+        $mensaje = "Error al insertar el registro en el histórico.";
+        $url = "tablero";
+        $this->mensajeResultado($titulo, $subtitulo, $mensaje, $url, "danger");
+      }
     }
   }
 
@@ -229,8 +253,6 @@ class Tablero extends Controlador{
           } else {
             array_push($erroresCarga_array,"No se cargó el archivo ".$nombre." por su tamaño<br>");
           }
-          
-         
         }
       }
       if (empty($errores)) {

@@ -1,0 +1,7 @@
+body{
+	background-image: url(/consultorio/public/img/fondo.jpg);
+	background-size: cover;
+}
+.colornav{
+	background-color: skyblue;
+}

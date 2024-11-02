@@ -5,7 +5,7 @@
   }
   ?>
 </h1>
-<div class="card p-4 bg-light">
+<div class="card p-4 text-warning-emphasis bg-warning-subtle border border-warning-subtle rounded-3">
   <table class="table table-striped" width="100%">
   <thead>
     <tr>

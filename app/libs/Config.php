@@ -10,6 +10,7 @@ class Config
 	
 	function __construct($ambiente)
 	{
+		setlocale(LC_MONETARY, 'es_MX');
 		date_default_timezone_set('America/Mexico_City');
 		switch ($ambiente)
 		{
