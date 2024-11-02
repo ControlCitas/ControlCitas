@@ -1,6 +1,6 @@
 <?php include_once("encabezado.php"); ?>
 <h1 class="text-center"><?php print $datos["subtitulo"]; ?></h1>
-<div class="card p-4 bg-light">
+<div class="card p-4 text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-3">
 	<form action="<?php print RUTA; ?>login/verificar/" method="POST">
 		<div class="form-group text-left">
 			<label for="usuario">* Usuario:</label>

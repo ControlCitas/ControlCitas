@@ -131,7 +131,7 @@
           print '<h4 class="text-center"><b>No puedes borrar el registro porque tiene '.$datos["numCitas"]." citas y ".$datos["numHorarios"]." horarios.</b></h4>";
         } else {
           print '<p class="text-center"><b>Advertencia: una vez borrado el registro, no podrá recuperar la información</b></p>';
-          print '<a href="'.RUTA.'doctores/bajaLogica/'.$datos['data']['id'].' class="btn btn-danger">Borrar</a>';
+          print '<a href="'.RUTA.'doctores/bajaLogica/'.$datos['data']['id'].'" class="btn btn-danger">Borrar</a>';
         }
         print '<a href="'.RUTA.'doctores" class="btn btn-danger">Regresar</a>';
         ?>
