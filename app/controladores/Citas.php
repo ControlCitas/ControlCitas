@@ -6,7 +6,7 @@ class Citas extends Controlador
 {
 	private $modelo;
   private  $admon;
-	
+	/*
 	function __construct()
 	{
     //Creamos sesion
@@ -18,6 +18,26 @@ class Citas extends Controlador
       header("location:".RUTA);
     }
 	}
+*/
+
+function __construct()
+{
+    // Iniciamos una nueva sesión
+    $sesion = new Sesion();
+
+    // Verificamos si el usuario ha iniciado sesión
+    if ($sesion->getLogin()) {
+        
+        // Si el usuario está logueado, cargamos el modelo "CitasModelo"
+        $this->modelo = $this->modelo("CitasModelo");
+
+        // Obtenemos el rol de administrador del usuario (si tiene)
+        $this->admon = $sesion->getAdmon();
+    } else {
+        // Si el usuario no ha iniciado sesión, lo redirigimos a la página principal
+        header("location:".RUTA);
+    }
+}
 
   public function caratula(){
 
