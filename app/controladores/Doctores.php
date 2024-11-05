@@ -27,7 +27,7 @@ class Doctores extends Controlador
 	{
 		//Leemos los datos de la tabla
 		$data = $this->modelo->getDoctores();
-
+         //datos en array para las vitas 
 		$datos = [
 			"titulo" => "Doctores",
 			"subtitulo" => "Listado de doctores",
