@@ -7,7 +7,11 @@ class Doctores extends Controlador
   private $modelo;
   private $admon;
 	
-	function __construct()
+	
+ 
+ 
+ 
+  function __construct()
 	{
 	    //Creamos sesion
 	    $sesion = new Sesion();
