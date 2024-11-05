@@ -1,11 +1,11 @@
 <?php  
 /**
- * Controlador login
+ * Controlador login que extiende de de la clase de controlador
  */
 class Citas extends Controlador
 {
 	private $modelo;
-  private $admon;
+  private  $admon;
 	
 	function __construct()
 	{
