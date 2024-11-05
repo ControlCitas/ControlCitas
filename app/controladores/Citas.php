@@ -53,7 +53,7 @@ function __construct()
         "activo" => 'citas',
         "data" => $data
       ];
-      $this->vista("citasCaratulaVista",$datos);
+      $this->vista("citasCaratulaVista",$datos); // Cargamos la vista "citasCaratulaVista" y enviamos los datos configurados
   }
 
   public function alta($errores = [],$data = []){
