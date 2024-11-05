@@ -5,7 +5,7 @@
 class Login extends Controlador
 {
 	private $modelo;
-	
+	//constructor principal que  se ejecuta cuando se instancia la clase de LOgin
 	function __construct()
 	{
 		$this->modelo = $this->modelo("LoginModelo");
