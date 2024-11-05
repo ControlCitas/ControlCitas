@@ -3,16 +3,21 @@
  * Controlador Login
  */
 class Tablero extends Controlador{
-  private $modelo;
+  private $modelo;  
   private $admon;
   private $usuario;
   private $pagina;
 
   function __construct()
   {
+    // Iniciamos una nueva sesión
     $sesion = new Sesion();
-    if ($sesion->getLogin()) {
+    // Verificamos si el usuario ha iniciado sesión
+    if ($sesion->getLogin())
+    // Si el usuario ha iniciado sesión, cargamos el modelo "TableroModelo"
+    {
       $this->modelo = $this->modelo("TableroModelo");
+      // Obtenemos el rol de administrador del usuario (si aplica)
       $this->admon = $sesion->getAdmon();
       $this->usuario = $sesion->getUsuario();
       $this->depurar();
