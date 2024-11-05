@@ -40,16 +40,16 @@ function __construct()
 }
 
   public function caratula(){
-
+ // Leemos los datos de la tabla utilizando el modelo
       //Leemos los datos de la tabla
       $data = $this->modelo->getTabla();;
-
+// Configuramos los datos que se enviarán a la vista "carátula"
       //Vista caratula
       $datos = [
-        "titulo" => "Citas",
-        "subtitulo" => "Citas",
-        "menu" => true,
-        "admon" => $this->admon,
+        "titulo" => "Citas",// Título principal de la página
+        "subtitulo" => "Citas", // Subtítulo de la página
+        "menu" => true, // Indica si se debe mostrar el menú en la vista
+        "admon" => $this->admon, // Rol de administrador, obtenido anteriormente en la sesión
         "activo" => 'citas',
         "data" => $data
       ];
